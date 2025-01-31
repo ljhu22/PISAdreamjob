@@ -38,4 +38,69 @@ print(gini_filtered)
 write.csv(gini_filtered, "gini_data.csv", row.names = FALSE)
 write.csv(gini_filtered, "/Users/linjinhu/Desktop/gini_data.csv", row.names = FALSE)
 
-#combine the 
+##get the sd of dreamjob in each pisa year
+
+install.packages("haven")
+install.packages("dplyr")
+install.packages("ggplot2")
+library(haven)
+library(dplyr)
+library(ggplot2)
+
+#2022
+#load the spss file
+file_path <- "/Users/linjinhu/Desktop/dream job project/PISA dataset/2022/2022schoolquestionaire.SAV"
+data2022 <- read_sav(file_path)
+
+## Select relevant variable
+newdata2022 <- data %>% select(CNT, CNTRYID, OCOD3)
+
+# Convert labels to names
+ocod3_labels <- attr(data$OCOD3, "labels")
+cntryid_labels <- attr(data$CNTRYID, "labels")
+ocod3_names <- setNames(names(ocod3_labels), ocod3_labels)
+cntryid_names <- setNames(names(cntryid_labels), cntryid_labels)
+
+# Function to replace codes with labels
+replace_codes_with_labels <- function(df, ocod3_labels, cntryid_labels) {
+  df$OCOD3 <- factor(df$OCOD3, levels = ocod3_labels, labels = names(ocod3_labels))
+  df$CNTRYID <- factor(df$CNTRYID, levels = cntryid_labels, labels = names(cntryid_labels))
+  return(df)
+}
+
+# Apply the label replacement function to the data
+newdata2022 <- replace_codes_with_labels(newdata2022, ocod3_labels, cntryid_labels)
+
+# Split the newdata by country (CNTRYID)
+split_data <- split(newdata2022, newdata2022$CNTRYID)
+
+# Count the frequency of each job (OCOD3) in each country
+count_ocod3 <- function(df) {
+  df %>%
+    count(OCOD3) %>%  # Count frequency of each occupation code
+    arrange(desc(n)) %>%
+    mutate(OCOD3 = factor(OCOD3, levels = OCOD3))
+}
+
+# Apply the frequency counting function to each country's data
+frequency_counts <- lapply(split_data, count_ocod3)
+
+# Function to calculate the standard deviation of occupation frequencies
+calc_sd <- function(df) {
+  sd(df$n, na.rm = TRUE)  # Calculate SD of the frequency counts
+}
+
+# Apply the standard deviation function to each country's data
+sd_results <- lapply(frequency_counts, calc_sd)
+
+# Combine the standard deviation results with country IDs
+sd_2022 <- data.frame(
+  CNTRYID = names(sd_results),
+  SD = unlist(sd_results)
+)
+
+
+#save
+write.csv(sd_2022, "pisasd_2022.csv", row.names = FALSE)
+write.csv(sd_2022, "/Users/linjinhu/Desktop/sd_2022.csv", row.names = FALSE)
+
