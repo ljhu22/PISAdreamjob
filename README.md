@@ -1,7 +1,4 @@
-# PISAdreamjob
-Class repo for From Data to Manuscript in R
-
-#Final Project 
+##Final Project:PISAdreamjob
 
 ##get the gini index of the country of each PISA year
 
@@ -40,3 +37,5 @@ print(gini_filtered)
 
 write.csv(gini_filtered, "gini_data.csv", row.names = FALSE)
 write.csv(gini_filtered, "/Users/linjinhu/Desktop/gini_data.csv", row.names = FALSE)
+
+#combine the 
