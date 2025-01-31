@@ -32,3 +32,5 @@ gini_filtered <- gini_data %>%
 print(gini_filtered)
 
 write.csv(gini_filtered, "gini_data.csv", row.names = FALSE)
+
+write.csv(gini_filtered, "/Users/linjinhu/Desktop/gini_data.csv", row.names = FALSE)
